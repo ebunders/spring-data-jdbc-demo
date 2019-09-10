@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.BooleanUtils.isFalse;
 import static org.hamcrest.Matchers.empty;
@@ -107,7 +106,7 @@ public class ArticleRepositoryTest {
     public void testfindArtcileForParagraph() {
         final Article a1 = articleRepository.save(Article.builder()
                 .title("an article")
-                .paragraphs(singletonList(Paragraph.builder()
+                .paragraphs(asList(Paragraph.builder()
                         .title("title")
                         .text("text")
                         .imagePosition(ImagePosition.LEFT)

@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 import static com.codepoetics.protonpack.StreamUtils.zipWithIndex;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.concat;
@@ -39,7 +38,7 @@ public class BlogRepositoryTest {
 
     @Test
     public void testSaveNewBlogSavesBlog() {
-        final Blog unsavedBlog = Blog.builder().name("blog").blogPosts(singletonList(BlogPost.builder().postName("foo").build())).build();
+        final Blog unsavedBlog = Blog.builder().name("blog").blogPosts(asList(BlogPost.builder().postName("foo").build())).build();
         Blog savedBlog = blogRepository.save(unsavedBlog);
 
         assertThat(savedBlog.getId(), is(equalTo(0)));
@@ -57,7 +56,7 @@ public class BlogRepositoryTest {
     public void testSaveExistingBlogSavesBlog() {
         final Blog blog = blogRepository.save(Blog.builder()
                 .name("blog")
-                .blogPosts(singletonList(BlogPost.builder()
+                .blogPosts(asList(BlogPost.builder()
                         .postName("foo")
                         .build()))
                 .build());
@@ -72,7 +71,7 @@ public class BlogRepositoryTest {
 
         final Blog blog = blogRepository.save(Blog.builder()
                 .name("blog")
-                .blogPosts(singletonList(BlogPost.builder()
+                .blogPosts(asList(BlogPost.builder()
                         .postName("foo")
                         .posted(now.plusMinutes(5))
                         .build()))
@@ -99,7 +98,7 @@ public class BlogRepositoryTest {
     public void testDeleteBlog() {
         Blog blog = blogRepository.save(Blog.builder()
                 .name("blog")
-                .blogPosts(singletonList(BlogPost.builder()
+                .blogPosts(asList(BlogPost.builder()
                         .postName("foo")
                         .build()))
                 .build());
@@ -113,7 +112,7 @@ public class BlogRepositoryTest {
     public void testRemoveBlogPost() {
         Blog blog = blogRepository.save(Blog.builder()
                 .name("blog")
-                .blogPosts(singletonList(BlogPost.builder()
+                .blogPosts(asList(BlogPost.builder()
                         .postName("foo")
                         .build()))
                 .build());
@@ -130,7 +129,7 @@ public class BlogRepositoryTest {
     public void testEditBlogPost() {
         Blog blog = blogRepository.save(Blog.builder()
                 .name("blog")
-                .blogPosts(singletonList(BlogPost.builder()
+                .blogPosts(asList(BlogPost.builder()
                         .postName("foo")
                         .build()))
                 .build());
@@ -145,7 +144,7 @@ public class BlogRepositoryTest {
     public void testRemoveBlog() {
         Blog blog = blogRepository.save(Blog.builder()
                 .name("blog")
-                .blogPosts(singletonList(BlogPost.builder()
+                .blogPosts(asList(BlogPost.builder()
                         .postName("foo")
                         .build()))
                 .build());
@@ -161,7 +160,7 @@ public class BlogRepositoryTest {
 
         Blog blog = blogRepository.save(Blog.builder()
                 .name("blog")
-                .blogPosts(singletonList(
+                .blogPosts(asList(
                         BlogPost.builder().postName("foo").build(),
                         BlogPost.builder().postName("bar").build(),
                         BlogPost.builder().postName("baz").build()
