@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface BlogRepository extends CrudRepository<Blog, Integer> {
 
-    @Query("SELECT b.* FROM blog b INNER JOIN blog_post as bp on b.id = bp.blog where bp.id = :blogPostId")
+    @SuppressWarnings("UnnecessaryInterfaceModifier")
+    @Query("SELECT b.* FROM blog b INNER JOIN blogpost as bp on b.id = bp.blog where bp.id = :blogPostId")
     public Optional<Blog> findBlogForBlogPostId(int blogPostId);
 }

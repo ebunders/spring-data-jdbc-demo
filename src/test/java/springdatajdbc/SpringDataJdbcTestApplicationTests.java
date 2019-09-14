@@ -24,7 +24,7 @@ public class SpringDataJdbcTestApplicationTests {
 
     @Test
     public void testInsertBlog() {
-//		final Blog a = Blog.builder().name("blog").id(null).build();
+//		final Blog a = Blog.builder().title("blog").id(null).build();
 //		Blog b = blogRepository.save(a);
 //		Blog u = b.withId(10);
 //		assertThat(a.getId(), is(nullValue()));
@@ -36,12 +36,12 @@ public class SpringDataJdbcTestApplicationTests {
 //		List<Blog> blogs = asList(blogRepository.findAll());
 //		assertThat(blogs.size(), is(equalTo(1)));
 //		assertThat(blogs.get(0).getId(), is(equalTo(0)));
-//		assertThat(blogs.get(0).getName(), is(equalTo("blog")));
+//		assertThat(blogs.get(0).getTitle(), is(equalTo("blog")));
 
 //        BlogPost bp1 = BlogPost.builder().posted(LocalDateTime.now()).postName("foo").build();
 //        BlogPost bp2 = BlogPost.builder().posted(LocalDateTime.now()).postName("bar").build();
 //
-//        final Blog a = Blog.builder().name("blog").blogPosts(asList(bp1, bp2)).build();
+//        final Blog a = Blog.builder().title("blog").blogPosts(asList(bp1, bp2)).build();
 //
 //
 //        Blog blog = blogRepository.save(a);

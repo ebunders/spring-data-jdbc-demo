@@ -1,4 +1,4 @@
-package springdatajdbc.model.blog;
+package springdatajdbc.model.user;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -6,15 +6,17 @@ import lombok.Value;
 import lombok.experimental.Wither;
 import org.springframework.data.annotation.Id;
 
-import java.time.LocalDateTime;
-
 @RequiredArgsConstructor
 @Value
 @Wither
 @Builder
-public class BlogPost {
+public class User {
+
+    public static User of(String name) {
+        return new User(null, name);
+    }
+
     @Id
     private final Integer id;
-    private final LocalDateTime posted;
-    private final String postName;
+    private final String name;
 }

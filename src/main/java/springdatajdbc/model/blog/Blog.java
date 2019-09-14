@@ -12,10 +12,11 @@ import java.util.List;
 @Value
 @Wither
 @Builder
-public class Blog {
+class Blog {
 
     @Id
     private final Integer id;
-    private final String name;
-    private final List<BlogPost> blogPosts;
+    private final String title;
+    private final List<Blogpost> blogPosts;
+    private final int owner;
 }
