@@ -13,12 +13,15 @@ import springdatajdbc.model.user.User;
 import springdatajdbc.model.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
@@ -30,7 +33,9 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static springdatajdbc.util.CollectionUtil.asSet;
+import static springdatajdbc.util.CollectionUtil.extendList;
 import static springdatajdbc.util.CollectionUtil.first;
+import static springdatajdbc.util.CollectionUtil.map;
 import static springdatajdbc.util.TestUtil.optionalValue;
 
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
@@ -41,11 +46,13 @@ import static springdatajdbc.util.TestUtil.optionalValue;
 public class BlogRepositoryTest {
 
     @Autowired
-    BlogRepository blogRepository;
+    private BlogRepository blogRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
     private User user;
+
 
     @Before
     public void set() {
@@ -282,6 +289,56 @@ public class BlogRepositoryTest {
         final Blog updatedBlog = blogRepository.save(blog.withBlogPosts(asList(first(blog.getBlogPosts()).withAuthors(asSet(AuthorRef.of(user))))));
 
         assertThat(first(updatedBlog.getBlogPosts()).getAuthors().size(), is(1));
-
     }
+
+    @Test
+    public void testFindBlogsForUser() {
+        final User foo = userRepository.save(User.of("foo"));
+        final Blog b1 = Blog.of(user, "foo");
+        final Blog b2 = Blog.of(user, "bar");
+        final Blog b3 = Blog.of(foo, "baz");
+        blogRepository.saveAll(asList(b1, b2, b3));
+
+        final List<Blog> blogs = blogRepository.findBlogsForUser(user.getId());
+
+        assertThat(map(blogs, Blog::getTitle), is(map(asList(b1, b2), Blog::getTitle)));
+    }
+
+    @Test
+    public void testGetBlogsWhereUserPosted() {
+        final User foo = userRepository.save(User.of("foo"));
+        final Blog b1 = blogRepository.save(Blog.of(user, "foo"));
+        final Blog b2 = blogRepository.save(Blog.of(user, "bar"));
+        final Blog b3 = blogRepository.save(Blog.of(foo, "baz"));
+
+        blogRepository.save(b1.withBlogPosts(asList(Blogpost.of("post1").addAuthor(user))));
+        blogRepository.save(b3.withBlogPosts(asList(Blogpost.of("post2").addAuthor(user))));
+
+        final List<Blog> result = blogRepository.findBlogsWhereUserPosted(user.getId());
+
+        assertThat(map(result, Blog::getTitle), is(map(asList(b1, b3), Blog::getTitle)));
+    }
+
+    @Test
+    public void findBlogPostsForUserInBlog() {
+        final User user1 = userRepository.save(User.of("foo"));
+        Blog blog = blogRepository.save(Blog.of(user, "foo"));
+
+        blog = addpostToBlog(user, blog, "post1");
+        blog = addpostToBlog(user1, blog, "post2");
+        blog = addpostToBlog(user, blog, "post3");
+        blog = addpostToBlog(user1, blog, "post3");
+        blogRepository.save(addpostToBlog(user1, blog, "post4"));
+
+        final List<Blogpost> userPosts = blogRepository.findBlogpostsForUserInBlog(user.getId(), blog.getId());
+        final List<Blogpost> user1Posts = blogRepository.findBlogpostsForUserInBlog(user1.getId(), blog.getId());
+
+        assertThat(map(userPosts, Blogpost::getTitle), is(asList("post1", "post3")));
+        assertThat(map(user1Posts, Blogpost::getTitle), is(asList("post2", "post3", "post4")));
+    }
+
+    private static Blog addpostToBlog(User user, Blog blog, String title) {
+        return blog.withBlogPosts(extendList(ofNullable(blog.getBlogPosts()).orElse(new ArrayList<>()), Blogpost.of(title).addAuthor(user)));
+    }
+
 }
