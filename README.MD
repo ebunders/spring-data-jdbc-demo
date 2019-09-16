@@ -43,11 +43,13 @@ referenties:
 - https://spring.io/blog/2018/09/24/spring-data-jdbc-references-and-aggregates
 - https://spring.io/projects/spring-data-jdbc
 - https://www.youtube.com/watch?v=ccxBXDAPdmo
+### Entity aggregaties
+-- todo
 
 ### Relaties
 
 ## Een op meer mapping
-een-op-meer mappingen:
+Het uitgangspunt is dat het hier om relaties binnen een entity aggregatie gaat. 
 
 	Set
 		Zorg dat de tabel van de 'meer' entity een kolom heeft met de naam van de 'een' entity met als type integer references {een}(id)
@@ -59,6 +61,7 @@ een-op-meer mappingen:
 			tabel blog_post:
 				blog   			integer references blog(id)
 				blog_key 		integer
+        vraag: Hoe zit het met 'bags' (ongesorteerd, niet uniek)
 
 	Map
 		Zoals hierboven, maar de blog_key kolom moet nu een text kolom worden:
@@ -70,4 +73,36 @@ een-op-meer mappingen:
 		Er is nog een tweede manier om maps te doen: Je kunt de Map declaratie annoteren met:
 			@Column(keyColumn = "{veld-in-meer-die-je-als-key-wilt-gebruiken}") bijv: blog_title
 			Let op: het moet de database column naam zijn, en niet de entity veld naam.
+
+## Meer op meer mapping
+Het uitgangspunt is dat het hier om relaties tussen verschillende entity aggregaties gaat, en de 'target' is dan
+ook altijd de 'root' van een andere entity aggregatie.
+
+Omdat het om een referentie gaat naar een andere aggregatie bestaat de relatie uit een id. Verder is de relatie altijd
+'owned' door een van de kanten (bijv. een auto `heeft` vier wielen), en dit bepaald de richting van de realatie. Relaties 
+zijn *niet* twee-richting. 
+Om zo'n relatie uit te drukken heb je twee dingen nodig: een koppeltabel, en een class. In het geval van de relatie
+tussen bijv. een 'book' en een 'author' (ervan uitgaand dat de ownership bij het boek ligt):
+tabel: book_author:
+```
+create table if not exists book_author(
+    boek     integer,
+    author integer,
+    primary key (user, blogpost)
+)
+```
+En dan hebben we een class nodig:
+```
+@Value
+@Table("book_author")
+class AuthorRef {
+    final int user;
+}
+```
+en in de book class voeg je een veld toe van type AuthorRef 
+
+## relatie classes en tabel name
+Spring data jdbc gaat ervan uit dat entity classes en tabellen dezelfde naam hebben waarbij camelcase wordt omgezet
+naar een scheiding met _ tekens. Voor classes kun je dat aanpassen met @Table, maar of en hoe je dat voor kolommen
+kunt doen is mij nog niet helemaal duidelijk. 
 

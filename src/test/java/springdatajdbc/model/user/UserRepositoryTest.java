@@ -48,7 +48,5 @@ public class UserRepositoryTest {
 
         assertThat(user.getId(), is(updatedUser.getId()));
         assertThat(updatedUser.getName(), is("foo"));
-
     }
-
 }
